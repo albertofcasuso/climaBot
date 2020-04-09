@@ -1,0 +1,24 @@
+{
+  "name": "climaBot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertofcasuso/climaBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albertofcasuso/climaBot/issues"
+  },
+  "homepage": "https://github.com/albertofcasuso/climaBot#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "twit": "^2.2.11"
+  }
+}
