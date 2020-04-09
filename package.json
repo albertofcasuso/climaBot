@@ -19,6 +19,7 @@
   "homepage": "https://github.com/albertofcasuso/climaBot#readme",
   "dependencies": {
     "axios": "^0.19.2",
+    "nodemon": "^2.0.3",
     "twit": "^2.2.11"
   }
 }
