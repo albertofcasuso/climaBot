@@ -8,9 +8,17 @@ const APIKey = config.apiConfig.APIKey
 const urlActual = `https://api.openweathermap.org/data/2.5/weather?id=${cityID}&appid=${APIKey}&units=metric&lang=es`
 const url = `https://api.openweathermap.org/data/2.5/forecast?id=${cityID}&appid=${APIKey}&units=metric&lang=es`
 
+const getDataFrom = async (url) => {
+  try{
+    const response = await axios.get(url)
+    return response
+  }
+  catch(error){
+    console.log(error)
+  }
+}
 
-
-const clima = function (data){
+const getCurrentWeather = function (data){
   const datos = data.data
   const obj = {
     temperatura(){
@@ -29,7 +37,7 @@ const clima = function (data){
   return obj
 }
 
-const prediccion = function (data){
+const getForecast = function (data){
   const datos = data.data
   const obj = {
     fecha(){
@@ -51,8 +59,10 @@ const prediccion = function (data){
   return obj
 }
 
-axios.get(urlActual).then(response => {
-  const tiempo = clima(response)
+const climaActual = async() => {
+  const datos = await getDataFrom(urlActual)
+  const tiempo = getCurrentWeather(datos)
+  
   const temperatura = tiempo.temperatura()
   const maxima = tiempo.temperaturaMaxima()
   const minima = tiempo.temperaturaMinima()
@@ -63,5 +73,7 @@ axios.get(urlActual).then(response => {
 
   const twit = {status:cuerpoTwit}
 
-  T.post('statuses/update',twit)
-})
+  //T.post('statuses/update',twit)
+}
+
+climaActual()
