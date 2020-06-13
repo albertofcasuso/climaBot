@@ -1,79 +1,106 @@
-const config = require('./config')
-const Twit = require('twit')
-const axios = require('axios')
+const config = require("./config");
+const Twit = require("twit");
+const axios = require("axios");
 
 const T = new Twit(config.twitConfig);
-const cityID = config.apiConfig.cityID
-const APIKey = config.apiConfig.APIKey
-const urlActual = `https://api.openweathermap.org/data/2.5/weather?id=${cityID}&appid=${APIKey}&units=metric&lang=es`
-const url = `https://api.openweathermap.org/data/2.5/forecast?id=${cityID}&appid=${APIKey}&units=metric&lang=es`
+const coords = config.coords;
+const APIKey = config.apiConfig.APIKey;
+const APIURI = `https://api.openweathermap.org/data/2.5/onecall?lat=${coords.lat}&lon=${coords.lon}&appid=${APIKey}&units=metric&lang=es`;
 
 const getDataFrom = async (url) => {
-  try{
-    const response = await axios.get(url)
-    return response
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.log(error);
   }
-  catch(error){
-    console.log(error)
-  }
-}
+};
 
-const getCurrentWeather = function (data){
-  const datos = data.data
+const getWeather = function (datos) {
   const obj = {
-    temperatura(){
-      return Math.round(datos.main.temp)
+    prediccionHoy() {
+      return datos.daily[0];
     },
-    temperaturaMaxima(){
-      return Math.round(datos.main.temp_max)
+    temperaturaActual() {
+      return Math.round(datos.current.temp);
     },
-    temperaturaMinima(){
-      return Math.round(datos.main.temp_min)
+    temperaturaMaxima() {
+      return Math.round(this.prediccionHoy().temp.max);
     },
-    descripcion(){
-      return datos.weather[0].description
-    }
-  }
-  return obj
-}
+    temperaturaMinima() {
+      return Math.round(this.prediccionHoy().temp.min);
+    },
+    descripcionActual() {
+      return datos.current.weather[0].description;
+    },
+    prediccionManana() {
+      return datos.daily[1];
+    },
+    temperaturaMaximaManana() {
+      return Math.round(this.prediccionManana().temp.max);
+    },
+    temperaturaMinimaManana() {
+      return Math.round(this.prediccionManana().temp.min);
+    },
+    descripcionManana() {
+      return this.prediccionManana().weather[0].description;
+    },
+    lluviaManana() {
+      return this.prediccionManana().rain;
+    },
+  };
+  return obj;
+};
 
-const getForecast = function (data){
-  const datos = data.data
-  const obj = {
-    fecha(){
-      return new Date(datos.dt*1000)
-    },
-    hora(){
-      return this.fecha().getHours()  
-    },
-    horaFormateada (){
-      return `${this.hora()}:00`
-    },
-    temperatura(){
-      return Math.round(datos.main.temp)
-    },
-    descripcion(){
-      return datos.weather[0].description
-    }
-  }
-  return obj
-}
-
-const climaActual = async() => {
-  const datos = await getDataFrom(urlActual)
-  const tiempo = getCurrentWeather(datos)
-  
-  const temperatura = tiempo.temperatura()
-  const maxima = tiempo.temperaturaMaxima()
-  const minima = tiempo.temperaturaMinima()
-  const descripcion = tiempo.descripcion()
+const climaActual = async () => {
+  const datos = await getDataFrom(APIURI);
+  const tiempo = getWeather(datos);
+  const temperatura = tiempo.temperaturaActual();
+  const descripcion = tiempo.descripcionActual();
 
   const cuerpoTwit = `
-  En este momento estamos a una temperatura de ${temperatura}°C con ${descripcion}. La máxima será de ${maxima}°C y la mínima de ${minima}°C`
+  En este momento estamos a ${temperatura}°C con ${descripcion}.`;
 
-  const twit = {status:cuerpoTwit}
+  const twit = { status: cuerpoTwit };
+  T.post("statuses/update", twit);
+};
 
-  //T.post('statuses/update',twit)
+const climaDelDia = async () => {
+  const datos = await getDataFrom(APIURI);
+  const tiempo = getWeather(datos);
+  const temperatura = tiempo.temperaturaActual();
+  const descripcion = tiempo.descripcionActual();
+  const maxima = tiempo.temperaturaMaxima();
+  const minima = tiempo.temperaturaMinima();
+
+  const cuerpoTwit = `
+  En este momento estamos a ${temperatura}°C con ${descripcion}. La máxima de hoy será de ${maxima}°C y la mínima de ${minima}°C.`;
+
+  const twit = { status: cuerpoTwit };
+  T.post("statuses/update", twit);
+};
+
+const climaManana = async () => {
+  const datos = await getDataFrom(APIURI);
+  const tiempo = getWeather(datos);
+  const maxima = tiempo.temperaturaMaximaManana();
+  const minima = tiempo.temperaturaMinimaManana();
+  const descripcion = tiempo.descripcionManana();
+
+  const cuerpoTwit = `
+  Para mañana se espera ${descripcion}, una temperatura máxima de ${maxima}°C y una mínima de ${minima}°C.`;
+
+  const twit = { status: cuerpoTwit };
+  T.post("statuses/update", twit);
+};
+
+const fecha = new Date();
+const hora = fecha.getHours() - 5;
+
+if (hora === 8) {
+  climaDelDia();
+} else if (hora === 18) {
+  climaManana();
+} else {
+  climaActual();
 }
-
-climaActual()
