@@ -74,7 +74,7 @@ const climaDelDia = async () => {
   const minima = tiempo.temperaturaMinima();
 
   const cuerpoTwit = `
-  En este momento estamos a ${temperatura}°C con ${descripcion}. La máxima de hoy será de ${maxima}°C y la mínima de ${minima}°C. #cdmx #clima`;
+  Estamos a ${temperatura}°C con ${descripcion}. La máxima de hoy será de ${maxima}°C y la mínima de ${minima}°C. #cdmx #clima`;
 
   const twit = { status: cuerpoTwit };
   T.post("statuses/update", twit);
