@@ -88,7 +88,7 @@ const climaManana = async () => {
   const descripcion = tiempo.descripcionManana();
 
   const cuerpoTwit = `
-  Para mañana se espera ${descripcion}, una temperatura máxima de ${maxima}°C y una mínima de ${minima}°C. #cdmx #clima`;
+  Mañana se espera ${descripcion}, una temperatura máxima de ${maxima}°C y una mínima de ${minima}°C. #cdmx #clima`;
 
   const twit = { status: cuerpoTwit };
   T.post("statuses/update", twit);
