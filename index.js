@@ -1,4 +1,4 @@
-/* Test Test */
+/* Test */
 const config = require("./config");
 const Twit = require("twit");
 const axios = require("axios");
