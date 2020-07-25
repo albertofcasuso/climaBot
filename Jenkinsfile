@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    node {
-      label 'climabot'
-    }
-
-  }
+  agent any
   stages {
     stage('Build') {
       steps {
