@@ -60,7 +60,7 @@ const climaActual = async () => {
   const descripcion = tiempo.descripcionActual();
 
   const cuerpoTwit = `
-  En este momento estamos a ${temperatura}°C con ${descripcion}.`;
+  En este momento estamos a ${temperatura}°C con ${descripcion}. #cdmx #clima`;
 
   const twit = { status: cuerpoTwit };
   T.post("statuses/update", twit);
